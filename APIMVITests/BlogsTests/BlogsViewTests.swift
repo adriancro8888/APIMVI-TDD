@@ -44,4 +44,31 @@ class BlogsViewTests: XCTestCase {
         verify(view).showLoading(show: false)
         verify(view).showRetry(show: true)
     }
+    
+    func equal(to value: Blog) -> ParameterMatcher<Blog> {
+        return ParameterMatcher(matchesFunction: { (blog) -> Bool in
+            return blog.id == value.id
+            && blog.userId == value.userId
+            && blog.title == value.title
+            && blog.body == value.body
+        })
+    }
+    
+    func test_renderSuccess() {
+        // Setup
+        let blogs = [
+            Blog(userId: 1, id: 1, title: "Test", body: "Test body"),
+            Blog(userId: 2, id: 2, title: "Test 2", body: "Test body 2")
+        ]
+        let successState = BlogState.success(blogs: blogs)
+        
+        // Act
+        view.render(state: successState)
+        
+        // Assert
+        verify(view).showLoading(show: false)
+        verify(view).showBlogs(blogs: Cuckoo.equal(to: blogs))
+    }
+
+    
 }

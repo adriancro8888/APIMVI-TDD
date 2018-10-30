@@ -12,4 +12,5 @@ import Foundation
 class SpyableBlogsView: BlogsView {
     func showLoading(show: Bool) {}
     func showRetry(show: Bool) {}
+    func showBlogs(blogs: [Blog]) {}
 }

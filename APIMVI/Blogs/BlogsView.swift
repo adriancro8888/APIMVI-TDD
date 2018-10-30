@@ -12,6 +12,7 @@ protocol BlogsView {
     // Writes
     func showLoading(show: Bool)
     func showRetry(show: Bool)
+    func showBlogs(blogs: [Blog])
 
     func render(state: BlogState)
 }
@@ -21,7 +22,11 @@ extension BlogsView {
         if (state.status == .failure) {
             showLoading(show: false)
             showRetry(show: true)
-        } else {
+        } else if (state.status == .success) {
+            showLoading(show: false)
+            showBlogs(blogs: state.allBlogs)
+        }
+        else {
             showLoading(show: true)
             showRetry(show: false)
         }
