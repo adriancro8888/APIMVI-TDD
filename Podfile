@@ -6,6 +6,7 @@ target 'APIMVI' do
   use_frameworks!
 
   # Pods for APIMVI
+  pod 'RxAlamofire', '= 4.2.0'
   pod 'RxSwift', '= 4.0.0'
   pod 'RxCocoa', :git => 'https://github.com/ReactiveX/RxSwift.git', :commit => 'a1e6be8'
 
@@ -14,6 +15,7 @@ target 'APIMVI' do
     # Pods for testing
     pod 'RxBlocking', '= 4.0.0'
     pod 'RxTest', '= 4.0.0'
+    pod 'Cuckoo'
   end
 
 end
