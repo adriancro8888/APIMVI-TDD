@@ -70,7 +70,7 @@ class BlogsViewTests: XCTestCase {
         verify(view).showBlogs(blogs: Cuckoo.equal(to: blogs))
     }
     
-    func test_renderFilteredBlogs() {
+    func test_renderNoFilteredBlogs() {
         // Setup
         let blogs = [
             Blog(userId: 1, id: 1, title: "Test", body: "Test body"),
@@ -83,5 +83,20 @@ class BlogsViewTests: XCTestCase {
         
         // Assert
         verify(view).showBlogs(blogs: Cuckoo.equal(to: []))
+    }
+    
+    func test_renderFilteredBlogs() {
+        // Setup
+        let blogs = [
+            Blog(userId: 1, id: 1, title: "Test", body: "Test body"),
+            Blog(userId: 2, id: 2, title: "Test 2", body: "Test body 2")
+        ]
+        let filteredState = BlogState(allBlogs: blogs, filteredBlogs: blogs, searchQuery: "T", status: .success)
+        
+        // Act
+        view.render(state: filteredState)
+        
+        // Assert
+        verify(view).showBlogs(blogs: Cuckoo.equal(to: blogs))
     }
 }
