@@ -11,13 +11,19 @@ import Foundation
 protocol BlogsView {
     // Writes
     func showLoading(show: Bool)
-    func render(state: BlogState)
+    func showRetry(show: Bool)
 
+    func render(state: BlogState)
 }
 
 extension BlogsView {
     func render(state: BlogState) {
-        showLoading(show: true)
+        if (state.status == .failure) {
+            showLoading(show: false)
+            showRetry(show: true)
+        } else {
+            showLoading(show: true)
+        }
     }
 }
 

@@ -26,4 +26,17 @@ class BlogsViewTests: XCTestCase {
         // Assert
         verify(view).showLoading(show: true)
     }
+
+    func test_renderFailure() {
+        // Setup
+        let failureState = BlogState.failure()
+        let view = MockSpyableBlogsView().withEnabledSuperclassSpy()
+        
+        // Act
+        view.render(state: failureState)
+        
+        // Assert
+        verify(view).showLoading(show: false)
+        verify(view).showRetry(show: true)
+    }
 }
