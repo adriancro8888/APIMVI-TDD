@@ -23,10 +23,13 @@ extension BlogsView {
             showLoading(show: false)
             showRetry(show: true)
         } else if (state.status == .success) {
-            showLoading(show: false)
-            showBlogs(blogs: state.allBlogs)
-        }
-        else {
+            if state.searchQuery == "" {
+                showLoading(show: false)
+                showBlogs(blogs: state.allBlogs)
+            } else {
+                showBlogs(blogs: state.filteredBlogs)
+            }
+        } else {
             showLoading(show: true)
             showRetry(show: false)
         }
