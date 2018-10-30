@@ -25,6 +25,7 @@ class BlogsViewTests: XCTestCase {
         
         // Assert
         verify(view).showLoading(show: true)
+        verify(view).showRetry(show: false)
     }
 
     func test_renderFailure() {

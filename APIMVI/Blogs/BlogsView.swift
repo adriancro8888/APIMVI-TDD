@@ -23,6 +23,7 @@ extension BlogsView {
             showRetry(show: true)
         } else {
             showLoading(show: true)
+            showRetry(show: false)
         }
     }
 }
