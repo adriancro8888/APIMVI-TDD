@@ -15,10 +15,15 @@ import Cuckoo
 @testable import APIMVI
 
 class BlogsViewTests: XCTestCase {
+    var view: MockSpyableBlogsView!
+
+    override func setUp() {
+        view = MockSpyableBlogsView().withEnabledSuperclassSpy()
+    }
+
     func test_renderViewCreated() {
         // Setup
         let viewCreatedState = BlogState.initial()
-        let view = MockSpyableBlogsView().withEnabledSuperclassSpy()
     
         // Act
         view.render(state: viewCreatedState)
@@ -31,7 +36,6 @@ class BlogsViewTests: XCTestCase {
     func test_renderFailure() {
         // Setup
         let failureState = BlogState.failure()
-        let view = MockSpyableBlogsView().withEnabledSuperclassSpy()
         
         // Act
         view.render(state: failureState)
