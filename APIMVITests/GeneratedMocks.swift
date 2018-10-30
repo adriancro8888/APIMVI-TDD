@@ -1,4 +1,4 @@
-// MARK: - Mocks generated from file: APIMVI/Blogs/NetworkManager.swift at 2018-10-29 11:28:13 +0000
+// MARK: - Mocks generated from file: APIMVI/Blogs/NetworkManager.swift at 2018-10-30 06:40:29 +0000
 
 //
 //  NetworkManager.swift
