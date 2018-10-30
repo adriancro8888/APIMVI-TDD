@@ -9,5 +9,16 @@
 import Foundation
 
 protocol BlogsView {
-    func  render(state: BlogState)
+    // Writes
+    func showLoading(show: Bool)
+    func render(state: BlogState)
+
 }
+
+extension BlogsView {
+    func render(state: BlogState) {
+        showLoading(show: true)
+    }
+}
+
+
