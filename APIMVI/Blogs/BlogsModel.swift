@@ -13,7 +13,6 @@ import RxAlamofire
 import Alamofire
 
 class BlogsModel {
-
   static func bind(
     _ lifecycle: Observable<MviLifecycle>,
     _ networkManager: NetworkManager,
@@ -21,14 +20,14 @@ class BlogsModel {
     _ states: Observable<BlogState>
   ) -> Observable<BlogState> {
 
-    let viewCreatedState = viewCreatedUseCase(lifecycle, networkManager)
-    let refreshIntentionState = retryIntentionUseCase(intentions, networkManager)
-    let searchIntentionState = searchIntentionUseCase(intentions, states)
+    let viewCreatedStates = viewCreatedUseCase(lifecycle, networkManager)
+    let refreshIntentionStates = retryIntentionUseCase(intentions, networkManager)
+    let searchIntentionStates = searchIntentionUseCase(intentions, states)
 
     return Observable.merge(
-      viewCreatedState,
-      refreshIntentionState,
-      searchIntentionState
+      viewCreatedStates,
+      refreshIntentionStates,
+      searchIntentionStates
     )
   }
 
@@ -39,7 +38,6 @@ class BlogsModel {
     return lifecycle
       .filter{ $0 == .created }
       .flatMapLatest({ _ -> Observable<BlogState> in
-
         let loadingState = Observable.just(BlogState.initial())
         let networkAPIState = networkManager.fetchBlogs()
           .map({ blogs in
@@ -58,9 +56,8 @@ class BlogsModel {
     _ intentions: BlogIntentions,
     _ networkManager: NetworkManager
   ) -> Observable<BlogState> {
-    return intentions.getRetryIntention()
+    return intentions.retry()
       .flatMapLatest({ (_) -> Observable<BlogState> in
-
         let loadingState = Observable.just(BlogState.initial())
         let networkAPIState = networkManager.fetchBlogs()
           .map({ blogs in
@@ -79,9 +76,9 @@ class BlogsModel {
     _ intentions: BlogIntentions,
     _ states: Observable<BlogState>
   ) -> Observable<BlogState> {
-
-    return intentions.getSearchIntention()
+    return intentions.search()
       .withLatestFrom(states, resultSelector: { (query, state) in
+        // Filtered (allBlogs: [Blog]) from previous state and return new state with the filtered blogs.
         let filteredBlogs = state.allBlogs.filter { $0.title.contains(query) }
         return BlogState(allBlogs: state.allBlogs, filteredBlogs: filteredBlogs, searchQuery: query, status: .success)
       })

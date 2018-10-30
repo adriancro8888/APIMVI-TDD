@@ -16,15 +16,13 @@ enum NetworkError: Error {
 }
 
 class NetworkManager {
-
   func fetchBlogs() -> Observable<[Blog]> {
-    return
-      request(
-       .get,
-       "http://demo3027021.mockable.io/post",
-       parameters: nil,
-       encoding: JSONEncoding.default,
-       headers: nil
+    return request(
+        .get,
+        "http://demo3027021.mockable.io/post",
+        parameters: nil,
+        encoding: JSONEncoding.default,
+        headers: nil
       )
       .validate()
       .responseData()

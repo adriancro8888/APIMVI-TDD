@@ -14,8 +14,8 @@ import RxTest
 import Cuckoo
 @testable import APIMVI
 
-class BlogModelTest: XCTestCase {
-
+class BlogModelTests: XCTestCase {
+  
   var disposeBag: DisposeBag!
   var observer: TestableObserver<BlogState>!
 
@@ -47,11 +47,10 @@ class BlogModelTest: XCTestCase {
       .disposed(by: disposeBag)
   }
 
-  func testEmitsErrorState_when_viewCreated_andAPICallFails() {
-
+  func testEmitsErrorState_whenNetworkFailsOnViewCreated() {
     // Setup
-    stub(mockNetworkManager) { (stub) in
-      when(stub.fetchBlogs())
+    stub(mockNetworkManager) { (networkManagerStub) in
+      when(networkManagerStub.fetchBlogs())
         .thenReturn(Observable.error(NetworkError.failure))
     }
 
@@ -59,11 +58,14 @@ class BlogModelTest: XCTestCase {
     lifecycle.accept(.created)
 
     // Assert
-    let expectedStates = [next(0, BlogState.initial()), next(0, BlogState.failure())]
+    let expectedStates = [
+      next(0, BlogState.initial()),
+      next(0, BlogState.failure())
+    ]
     XCTAssertEqual(observer.events, expectedStates)
   }
 
-  func testEmitsSuccessState_when_viewCreated_andAPICallReturnsBlogs() {
+  func testEmitsSuccessState_whenNetworkSucceedsOnViewCreated() {
     // Setup
     let blogs = [
       Blog(userId: 1, id: 1, title: "Test", body: "Test body"),
@@ -72,8 +74,8 @@ class BlogModelTest: XCTestCase {
 
     let expectedResult: Observable<[Blog]> = Observable.of(blogs)
 
-    stub(mockNetworkManager) { (stub) in
-      when(stub.fetchBlogs())
+    stub(mockNetworkManager) { (networkManagerStub) in
+      when(networkManagerStub.fetchBlogs())
       .thenReturn(expectedResult)
     }
 
@@ -81,15 +83,17 @@ class BlogModelTest: XCTestCase {
     lifecycle.accept(.created)
 
     // Assert
-    let expectedStates = [next(0, BlogState.initial()), next(0, BlogState.success(blogs: blogs))]
+    let expectedStates = [
+      next(0, BlogState.initial()),
+      next(0, BlogState.success(blogs: blogs))
+    ]
     XCTAssertEqual(observer.events, expectedStates)
   }
 
-  func testEmitsErrorState_when_retryIntention_andAPICallFails() {
-
+  func testEmitsErrorState_whenNetworkFailsOnRetry() {
     // Setup
-    stub(mockNetworkManager) { (stub) in
-      when(stub.fetchBlogs())
+    stub(mockNetworkManager) { (networkManagerStub) in
+      when(networkManagerStub.fetchBlogs())
         .thenReturn(Observable.error(NetworkError.failure))
     }
 
@@ -107,8 +111,7 @@ class BlogModelTest: XCTestCase {
     XCTAssertEqual(observer.events, expectedStates)
   }
 
-  func testEmitsSuccessState_when_retryIntention_andAPICallReturnsBlogs() {
-
+  func testEmitsSuccessState_whenNetworkSucceedsOnRetry() {
     // Setup
     let blogs = [
       Blog(userId: 1, id: 1, title: "Test", body: "Test body"),
@@ -117,8 +120,8 @@ class BlogModelTest: XCTestCase {
 
     let expectedResult: Observable<[Blog]> = Observable.of(blogs)
 
-    stub(mockNetworkManager) { (stub) in
-      when(stub.fetchBlogs())
+    stub(mockNetworkManager) { (networkManagerStub) in
+      when(networkManagerStub.fetchBlogs())
         .thenReturn(Observable.error(NetworkError.failure))
         .thenReturn(expectedResult)
     }
@@ -137,8 +140,7 @@ class BlogModelTest: XCTestCase {
     XCTAssertEqual(observer.events, expectedStates)
   }
 
-  func testEmitsFilteredState_when_searchIntention_andNoResults() {
-
+  func testEmitsStateWithFilteredBlogs_whenNoResultsFoundForSearchQuery() {
     // Setup
     let blogs = [
       Blog(userId: 1, id: 1, title: "Test", body: "Test body"),
@@ -147,8 +149,8 @@ class BlogModelTest: XCTestCase {
 
     let expectedResult: Observable<[Blog]> = Observable.of(blogs)
 
-    stub(mockNetworkManager) { (stub) in
-      when(stub.fetchBlogs())
+    stub(mockNetworkManager) { (networkManagerStub) in
+      when(networkManagerStub.fetchBlogs())
         .thenReturn(expectedResult)
     }
 
@@ -169,8 +171,7 @@ class BlogModelTest: XCTestCase {
     XCTAssertEqual(observer.events, expectedStates)
   }
 
-  func testEmitsFilteredState_when_searchIntention_andFilteredBlogs() {
-
+  func testEmitsStateWithFilteredBlogs_whenResultsFoundForSearchQuery() {
     // Setup
     let blogs = [
       Blog(userId: 1, id: 1, title: "Test", body: "Test body"),
@@ -183,8 +184,8 @@ class BlogModelTest: XCTestCase {
 
     let expectedResult: Observable<[Blog]> = Observable.of(blogs)
 
-    stub(mockNetworkManager) { (stub) in
-      when(stub.fetchBlogs())
+    stub(mockNetworkManager) { (networkManagerStub) in
+      when(networkManagerStub.fetchBlogs())
         .thenReturn(expectedResult)
     }
 

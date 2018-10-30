@@ -22,11 +22,11 @@ class BlogIntentions {
     self.searchIntention = searchIntention
   }
 
-  func getRetryIntention() -> Observable<Void> {
+  func retry() -> Observable<Void> {
     return retryIntention
   }
 
-  func getSearchIntention() -> Observable<String> {
+  func search() -> Observable<String> {
     return searchIntention
   }
 }

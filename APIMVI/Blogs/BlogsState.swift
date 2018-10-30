@@ -29,7 +29,6 @@ struct BlogState: Equatable {
 }
 
 extension BlogState {
-
   static func initial() -> BlogState {
     return BlogState(allBlogs: [], filteredBlogs: [], searchQuery: "", status: .fetching)
   }
@@ -41,8 +40,4 @@ extension BlogState {
   static func success(blogs: [Blog]) -> BlogState {
     return BlogState(allBlogs: blogs, filteredBlogs: [], searchQuery: "", status: .success)
   }
-
-//  static func filtered(_ filteredBlogs: [Blog], query: String) -> BlogState {
-//    return BlogState(allBlogs: blogs, filteredBlogs: filteredBlogs, searchQuery: query, status: .success)
-//  }
 }

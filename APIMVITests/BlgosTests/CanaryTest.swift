@@ -10,7 +10,6 @@ import Foundation
 import XCTest
 
 class CanaryTest: XCTestCase {
-
   func canaryTest() {
     XCTAssertEqual(true, true)
   }
