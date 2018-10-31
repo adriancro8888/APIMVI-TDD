@@ -20,23 +20,23 @@ protocol BlogsView {
 extension BlogsView {
     func render(state: BlogState) {
         switch state.status {
-            case .fetching : render(fetching: state)
-            case .failure  : render(failure: state)
-            case .success  : render(success: state)
+            case .fetching : renderFetchingState(state)
+            case .failure  : renderFailureState(state)
+            case .success  : renderSuccessState(state)
         }
     }
     
-    private func render(fetching state: BlogState) {
+    private func renderFetchingState(_ state: BlogState) {
         showLoading(show: true)
         showRetry(show: false)
     }
     
-    private func render(failure state: BlogState) {
+    private func renderFailureState(_ state: BlogState) {
         showLoading(show: false)
         showRetry(show: true)
     }
     
-    private func render(success state: BlogState) {
+    private func renderSuccessState(_ state: BlogState) {
         if state.searchQuery == "" {
             showLoading(show: false)
             showBlogs(blogs: state.allBlogs)
