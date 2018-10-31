@@ -31,6 +31,8 @@ class BlogsViewTests: XCTestCase {
         // Assert
         verify(view).showLoading(show: true)
         verify(view).showRetry(show: false)
+        
+        verify(view, never()).showBlogs(blogs: any())
     }
 
     func test_renderFailure() {
@@ -43,15 +45,8 @@ class BlogsViewTests: XCTestCase {
         // Assert
         verify(view).showLoading(show: false)
         verify(view).showRetry(show: true)
-    }
-    
-    func equal(to value: Blog) -> ParameterMatcher<Blog> {
-        return ParameterMatcher(matchesFunction: { (blog) -> Bool in
-            return blog.id == value.id
-            && blog.userId == value.userId
-            && blog.title == value.title
-            && blog.body == value.body
-        })
+
+        verify(view, never()).showBlogs(blogs: any())
     }
     
     func test_renderSuccess() {
@@ -68,6 +63,8 @@ class BlogsViewTests: XCTestCase {
         // Assert
         verify(view).showLoading(show: false)
         verify(view).showBlogs(blogs: Cuckoo.equal(to: blogs))
+
+        verify(view, never()).showRetry(show: any())
     }
     
     func test_renderNoFilteredBlogs() {
@@ -83,6 +80,9 @@ class BlogsViewTests: XCTestCase {
         
         // Assert
         verify(view).showBlogs(blogs: Cuckoo.equal(to: []))
+
+        verify(view, never()).showLoading(show: any())
+        verify(view, never()).showRetry(show: any())
     }
     
     func test_renderFilteredBlogs() {
@@ -98,5 +98,17 @@ class BlogsViewTests: XCTestCase {
         
         // Assert
         verify(view).showBlogs(blogs: Cuckoo.equal(to: blogs))
+        
+        verify(view, never()).showLoading(show: any())
+        verify(view, never()).showRetry(show: any())
+    }
+    
+    func equal(to value: Blog) -> ParameterMatcher<Blog> {
+        return ParameterMatcher(matchesFunction: { (blog) -> Bool in
+            return blog.id == value.id
+                && blog.userId == value.userId
+                && blog.title == value.title
+                && blog.body == value.body
+        })
     }
 }
