@@ -22,6 +22,9 @@
                                 <rect key="frame" x="164" y="318.5" width="47" height="30"/>
                                 <state key="normal" title="RETRY"/>
                             </button>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Qzg-RI-bgh">
+                                <rect key="frame" x="177.5" y="323.5" width="20" height="20"/>
+                            </activityIndicatorView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="gMw-8h-qKB">
                                 <rect key="frame" x="0.0" y="94" width="375" height="573"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -69,16 +72,19 @@
                             <constraint firstItem="Hfo-a3-yci" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="53M-gu-ILU"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="gMw-8h-qKB" secondAttribute="bottom" id="7jk-P7-zfV"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Hfo-a3-yci" secondAttribute="trailing" constant="30" id="Flv-H4-ZNO"/>
+                            <constraint firstItem="Qzg-RI-bgh" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="IA6-le-clC"/>
                             <constraint firstItem="eXW-B1-BrA" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="QGA-pp-NbL"/>
                             <constraint firstItem="gMw-8h-qKB" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="WxZ-qd-hDJ"/>
                             <constraint firstItem="gMw-8h-qKB" firstAttribute="top" secondItem="Hfo-a3-yci" secondAttribute="bottom" id="bHg-EG-vg8"/>
                             <constraint firstItem="eXW-B1-BrA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="d0X-rC-WXO"/>
                             <constraint firstItem="Hfo-a3-yci" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="q8i-b7-tYW"/>
+                            <constraint firstItem="Qzg-RI-bgh" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="rzq-Yq-Gl1"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" title="Blogs" id="EyF-uB-uBb"/>
                     <connections>
+                        <outlet property="activityIndicatorView" destination="Qzg-RI-bgh" id="39i-OL-BJE"/>
                         <outlet property="retryButton" destination="eXW-B1-BrA" id="8iw-zh-lcb"/>
                         <outlet property="searchTextField" destination="Hfo-a3-yci" id="ASt-Ww-Yzx"/>
                         <outlet property="tableView" destination="gMw-8h-qKB" id="o7I-jM-Qtp"/>

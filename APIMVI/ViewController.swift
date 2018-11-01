@@ -11,45 +11,53 @@ import RxSwift
 import RxCocoa
 
 class ViewController: UIViewController {
-  private var disposeBag = DisposeBag()
+  private let disposeBag = DisposeBag()
 
-  private var lifecycleRelay: PublishRelay<MviLifecycle>!
-  private var statesRelay: BehaviorRelay<BlogState>!
+  private let lifecycleRelay = PublishRelay<MviLifecycle>()
+  private let statesRelay = BehaviorRelay<BlogState?>(value: nil)
+  private let networkManager = NetworkManager()
 
-  private var networkManager: NetworkManager!
-  private var intentions: BlogIntentions!
+  // Intentions
+  private lazy var retryIntention = retryButton.rx.tap.asObservable()
+  private lazy var searchIntention = searchTextField.rx.text.orEmpty.asObservable()
+  private lazy var intentions = BlogIntentions(retryIntention, searchIntention)
 
   // UI Components
-  @IBOutlet private weak var retryButton: UIButton!
-  @IBOutlet private weak var searchTextField: UITextField!
-  @IBOutlet private weak var tableView: UITableView!
-  lazy var activityView: UIActivityIndicatorView = {
-    var activityView = UIActivityIndicatorView()
-    activityView.style = .gray
-    activityView.transform = CGAffineTransform(scaleX: 2, y: 2)
-    return activityView
-  }()
-
+  @IBOutlet private weak var retryButton: UIButton! {
+    didSet {
+      retryButton.isHidden = true
+    }
+  }
+  @IBOutlet private weak var searchTextField: UITextField! {
+    didSet {
+      searchTextField.isHidden = true
+    }
+  }
+  @IBOutlet private weak var tableView: UITableView! {
+    didSet {
+      tableView.isHidden = true
+    }
+  }
+  @IBOutlet weak var activityIndicatorView: UIActivityIndicatorView! {
+    didSet {
+      let scale: CGFloat = 3
+      activityIndicatorView.transform = CGAffineTransform(scaleX: scale, y: scale)
+    }
+  }
+  
   override func viewDidLoad() {
     super.viewDidLoad()
-    setUpIndicatorView()
 
     setup()
-
     lifecycleRelay.accept(.created)
   }
 
-  private func setup() {
-    lifecycleRelay = PublishRelay()
-    statesRelay = BehaviorRelay(value: BlogState.initial())
+  func setup() {
+    let statesObservable = statesRelay
+      .filter { return $0 != nil }
+      .map { $0! }
 
-    networkManager = NetworkManager()
-    intentions = BlogIntentions(
-      retryButton.rx.tap.asObservable(),
-      searchTextField.rx.text.orEmpty.asObservable()
-    )
-
-    bind(lifecycleRelay.asObservable(), networkManager, intentions, statesRelay.asObservable())
+    bind(lifecycleRelay.asObservable(), networkManager, intentions, statesObservable)
   }
 
   private func bind(
@@ -69,17 +77,15 @@ class ViewController: UIViewController {
       }
       .disposed(by: disposeBag)
   }
-
-  func setUpIndicatorView() {
-    view.addSubview(activityView)
-    activityView.center = view.center
-  }
 }
 
 extension ViewController: BlogsView {
   func showLoading(show: Bool) {
-    if show { activityView.startAnimating() }
-    else { activityView.stopAnimating() }
+    if show {
+      activityIndicatorView.startAnimating()
+    } else {
+      activityIndicatorView.stopAnimating()
+    }
   }
 
   func showRetry(show: Bool) {
@@ -89,7 +95,6 @@ extension ViewController: BlogsView {
   }
 
   func showBlogs(blogs: [Blog]) {
-
     let blogs = Observable.of(
       blogs.sorted { $0.title.count < $1.title.count }
     )
