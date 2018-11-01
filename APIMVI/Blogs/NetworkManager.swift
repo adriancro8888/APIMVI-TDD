@@ -19,7 +19,7 @@ class NetworkManager {
   func fetchBlogs() -> Observable<[Blog]> {
     return request(
         .get,
-        "http://demo3027021.mockable.io/post",
+        "http://demo3027021.mockable.io/posts",
         parameters: nil,
         encoding: JSONEncoding.default,
         headers: nil
