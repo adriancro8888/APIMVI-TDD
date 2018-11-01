@@ -7,45 +7,102 @@
 //
 
 import UIKit
-import Foundation
 import RxSwift
 import RxCocoa
-import RxAlamofire
-import Alamofire
 
 class ViewController: UIViewController {
+  private var disposeBag = DisposeBag()
 
-  let disposeBag = DisposeBag()
+  private var lifecycleRelay: PublishRelay<MviLifecycle>!
+  private var statesRelay: BehaviorRelay<BlogState>!
+
+  private var networkManager: NetworkManager!
+  private var intentions: BlogIntentions!
+
+  // UI Components
+  @IBOutlet private weak var retryButton: UIButton!
+  @IBOutlet private weak var searchTextField: UITextField!
+  @IBOutlet private weak var tableView: UITableView!
+  lazy var activityView: UIActivityIndicatorView = {
+    var activityView = UIActivityIndicatorView()
+    activityView.style = .gray
+    activityView.transform = CGAffineTransform(scaleX: 2, y: 2)
+    return activityView
+  }()
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    setUpIndicatorView()
 
-    getRequest().subscribe(onNext: { (arr) in
-      print("Array Count")
-      print(arr.count)
-    }, onError: {
-      (error) in
-      print("Error")
-      print(error.localizedDescription)
-    }).disposed(by: disposeBag)
+    setup()
+
+    lifecycleRelay.accept(.created)
   }
 
-  func getRequest() -> Observable<[Blog]> {
+  private func setup() {
+    lifecycleRelay = PublishRelay()
+    statesRelay = BehaviorRelay(value: BlogState.initial())
 
-    let urlString = "http://demo3027021.mockable.io/posts"
+    networkManager = NetworkManager()
+    intentions = BlogIntentions(
+      retryButton.rx.tap.asObservable(),
+      searchTextField.rx.text.orEmpty.asObservable()
+    )
 
-        return
-          request(
-            .get,
-            urlString,
-            parameters: nil,
-            encoding: JSONEncoding.default,
-            headers: nil
-          )
-          .validate()
-          .responseData()
-          .map({ (_, data) -> [Blog] in
-            return try JSONDecoder().decode([Blog].self, from: data)
-          })
+    bind(lifecycleRelay.asObservable(), networkManager, intentions, statesRelay.asObservable())
+  }
+
+  private func bind(
+    _ lifecycle: Observable<MviLifecycle>,
+    _ networkManager: NetworkManager,
+    _ intentions: BlogIntentions,
+    _ states: Observable<BlogState>
+  ) {
+    BlogsModel
+      .bind(lifecycle, networkManager, intentions, states.asObservable())
+      .observeOn(MainScheduler.asyncInstance)
+      .subscribe { (state) in
+        if let state = state.element {
+          self.statesRelay.accept(state)
+          self.render(state: state)
+        }
+      }
+      .disposed(by: disposeBag)
+  }
+
+  func setUpIndicatorView() {
+    view.addSubview(activityView)
+    activityView.center = view.center
+  }
+}
+
+extension ViewController: BlogsView {
+  func showLoading(show: Bool) {
+    if show { activityView.startAnimating() }
+    else { activityView.stopAnimating() }
+  }
+
+  func showRetry(show: Bool) {
+    retryButton.isHidden = !show
+    tableView.isHidden = show
+    searchTextField.isHidden = show
+  }
+
+  func showBlogs(blogs: [Blog]) {
+
+    let blogs = Observable.of(
+      blogs.sorted { $0.title.count < $1.title.count }
+    )
+
+    tableView.delegate = nil
+    tableView.dataSource = nil
+
+    blogs.bind(to: tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) {
+        (_, blog, cell) in
+        cell.textLabel?.text = blog.title
+        cell.detailTextLabel?.text = blog.body
+      }.disposed(by: disposeBag)
+
+    tableView.reloadData()
   }
 }
